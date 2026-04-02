@@ -1,0 +1,289 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body,html{
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background-color: var(--color-bg-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+:root {
+  /* COLORS*/
+  --color-primary: #000000;
+  --color-primary-light: #3b82f6;
+  --color-primary-dark: #1e40af;
+
+  --color-secondary: #10b981;
+  --color-secondary-light: #34d399;
+  --color-secondary-dark: #047857;
+
+  --color-bg: #ffffff;
+  --color-bg-dark: #0f172a;
+  --color-bg-light : #131d33;  
+  --color-bg-exlight : #18243f;  
+
+  --color-surface: #f8fafc;
+  --color-surface-dark: #1e293b;
+
+  --color-border: #e5e7eb;
+  --color-border-secondary : #25355e;
+  
+  --color-text-primary: #111827;
+  --color-text-secondary: #cfcfcf;
+  --color-text-inverse: #ffffff;
+
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-success: #22c55e;
+
+  /* SPACING (PADDING / MARGIN) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* BORDER RADIUS */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* FONT SIZES */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+
+  /* FONT WEIGHT */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+
+  /* LINE HEIGHT */
+  --line-tight: 1.2;
+  --line-normal: 1.5;
+  --line-loose: 1.8;
+
+  /* SHADOWS */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.15);
+  --shadow-xl: 0 22px 29px rgba(0,0,0,0.15);
+
+  /* WIDTH / HEIGHT (DIV SIZES) */
+  --size-xs: 100px;
+  --size-sm: 200px;
+  --size-md: 300px;
+  --size-lg: 400px;
+  --size-xl: 600px;
+  --size-full: 100%;
+
+  /* TRANSITIONS */
+  --transition-fast: 0.2s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
+}
+#taskbar{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--color-bg-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: var(--space-md);
+}
+#taskbar i{
+    font-size: var(--text-xl);
+
+}
+#taskbar .startMenuGroup{
+    display: flex;
+}
+#taskbar .startMenuWrapper{
+    padding: var(--space-sm);
+}
+.startMenuGroup #searchBar{
+    position: relative;
+}
+.startMenuGroup #searchBar input{
+    background-color: var(--color-bg-exlight);
+    border: none;
+    outline: none;
+    height: 100%;
+    color: var(--color-text-inverse);
+    padding:0 var(--space-md) 0 var(--space-md) ;
+    border: 1px solid var(--color-border-secondary);
+}
+.startMenuGroup #searchBar i{
+    position: absolute;
+    right: 3%;
+    top: 50%;
+    transform: translate(0%,-50%);
+}
+.rightTaskbar{
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+.rightTaskbar .weatherReports{
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+.systemFeatures{
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+.systemFeatures p{
+    color: var(--color-text-secondary);
+}
+.systemFeatures i{
+    font-size: var(--text-md) !important;
+}
+.dateAndTime .dateTimeData{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+}
+.dateAndTime{
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+.dateAndTime i{
+    font-size: var(--text-md) !important;
+}
+.contextMenu {
+  position: absolute;
+  width: 220px;
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  display: none;
+  z-index: 1000;
+  overflow: hidden;
+
+  backdrop-filter: blur(12px);
+}
+
+.contextMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-xs) 0;
+}
+.contextMenu .divider {
+   padding: .8px var(--space-xs)!important    ;
+  background: var(--color-border-secondary);
+  pointer-events: none;
+}
+.contextMenu li {
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.contextMenu li i {
+  width: 18px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.contextMenu li:hover {
+  background: var(--color-bg-exlight);
+  color: var(--color-text-inverse);
+}
+
+.contextMenu li:hover i {
+  color: var(--color-text-inverse);
+}
+
+.folder {
+  width: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-fast);
+}
+
+.folder:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.folder-icon {
+  font-size: 44px;
+  color: #facc15; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.folder:hover .folder-icon {
+  transform: scale(1.05);
+}
+.folder-name {
+  font-size: var(--text-xs);
+  color: var(--color-text-inverse);
+  text-align: center;
+  line-height: var(--line-tight);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  max-width: 100%;
+  word-break: break-word;
+}
+.folder.selected {
+  background: rgba(59, 130, 246, 0.15);
+}
+.folder.selected .folder-name {
+  background: var(--color-primary-light);
+  color: white;
+}
+
+.folder-name[contenteditable="true"] {
+  outline: none;
+  background: var(--color-bg-exlight);
+  box-shadow: 0 0 0 1px var(--color-primary-light);
+}
+
+.window {
+  padding: var(--space-sm);
+  width: 100%;
+  height: 94vh;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 100px);
+  grid-auto-columns: 90px;
+  gap: var(--space-sm);
+  align-content: start;
+}
