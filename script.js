@@ -48,6 +48,30 @@ const folderOptions = () => `
     </li>
   </ul>
 `;
+const recursiveFolderOptions = () => `
+  
+    <ul>
+      <li data-action="new-folder">
+        <i class="fa-solid fa-folder-plus new-folder"></i>
+        <span>Create Folder</span>
+      </li>
+
+      <li data-action="rename">
+        <i class="fa-solid fa-pen rename"></i>
+        <span>Rename</span>
+      </li>
+
+      <li data-action="delete">
+        <i class="fa-solid fa-trash delete"></i>
+        <span>Delete</span>
+      </li>
+
+      <li data-action="properties">
+        <i class="fa-solid fa-circle-info properties"></i>
+        <span>Properties</span>
+      </li>
+    </ul>
+`;
 
 const folderUi = (name = "New Folder") => `
     
@@ -60,35 +84,51 @@ const folderUi = (name = "New Folder") => `
     </div>
 
 `;
-const folderOpenUi = (folderName = "New Folder") => `
+const folderOpenUi = (folderName = "New Folder",createdAt) => `
  
     <div class="folder-header">
       <div class="folder-title">
-        <i class="fa-solid fa-folder"></i>
+        <i style="color:#ffd43b;" class="fa-solid fa-folder"></i>
         <span>${folderName}</span>
       </div>
       <div class="folder-controls">
         <button class="minimize-btn" title="Minimize">—</button>
-        <button class="maximize-btn" title="Maximize">🗖</button>
-        <button class="close-btn" title="Close">✕</button>
+        <button id="maximizeBtn" class="maximize-btn" title="Maximize">🗖</button>
+        <button id="closeFolderBtn" class="close-btn" title="Close">✕</button>
       </div>
     </div>
     <div class="folder-body">
-      <p>Welcome to ${folderName}!</p>
-      <!-- You can dynamically render files/folders here -->
+     
     </div>
+   <div class="folderInfo">
+  <div class="info-item">
+    <span class="label">📁 Name</span>
+    <span class="value">${folderName}</span>
+  </div>
+
+  <div class="info-item">
+    <span class="label">🗓 Created</span>
+    <span class="value">${createdAt ? createdAt : "—"}</span>
+  </div>
+
+  <div class="info-item">
+    <span class="label">📦 Items</span>
+    <span class="value">0 Files</span>
+  </div>
+
+  <div class="info-item">
+    <span class="label">💾 Size</span>
+    <span class="value">—</span>
+  </div>
+</div>
+
   
 `;
 
-function closeOpenedMenu(e) {
-    if (e) e.preventDefault();
-    const oldMenu = document.querySelector(".contextMenu");
-    if (oldMenu) oldMenu.remove();
-    closeOpenFolderUpdationMenu();
-}
+
 function createContextMenu(e) {
     e.preventDefault();
-    closeOpenFolderUpdationMenu();
+    closeAllMenus();
     const oldMenu = document.querySelector(".contextMenu");
     if (oldMenu) oldMenu.remove();
     const contextMenu = document.createElement('div');
@@ -118,15 +158,15 @@ function selectText(element) {
     selection.removeAllRanges();
     selection.addRange(range);
 }
-function createFolderCode(fName, folderId, children,left = null,top =null) {
-    closeOpenedMenu();
+function createFolderCode(fName, folderId, children, left = null, top = null) {
+    closeAllMenus()
     let folder = document.createElement("div");
     folder.classList.add("folder")
     folder.setAttribute("draggable", "true");
     folder.id = folderId ? folderId : id();
     folder.innerHTML = fName ? folderUi(fName) : folderUi();
     windowDiv.appendChild(folder);
-    if(left !== null || top !== null){
+    if (left !== null || top !== null) {
         folder.style.position = "absolute";
         folder.style.left = left + "px";
         folder.style.top = top + "px";
@@ -147,25 +187,22 @@ function createFolderCode(fName, folderId, children,left = null,top =null) {
     }
     folder.addEventListener("dblclick", openFolderContextMenu);
 }
-function closeOpenFolderUpdationMenu() {
-    let exisitingFolderUpdationMenu = document.querySelector(".folderUpdationMenu");
-    if (exisitingFolderUpdationMenu) exisitingFolderUpdationMenu.remove()
-}
+
 function renameFolderName(e, folder) {
-    closeOpenFolderUpdationMenu();
+    closeAllMenus();
     const folderName = folder.querySelector(".folder-name");
     folderName.setAttribute("contentEditable", "true");
     selectText(folderName);
     folderName.addEventListener("blur", () => {
         const left = parseInt(folder.style.left) || 0;
         const top = parseInt(folder.style.top) || 0;
-        saveFolders(folder.id, folderName.innerText,left,top);
+        saveFolders(folder.id, folderName.innerText, left, top);
     })
 
 
 }
 function deleteFolder(e, folder) {
-    closeOpenFolderUpdationMenu();
+    closeAllMenus()
     let exisingFolder = JSON.parse(localStorage.getItem("Folders"));
     let filterFolders = exisingFolder.filter(f => f.folderId != folder.id);
     console.log(filterFolders);
@@ -175,8 +212,7 @@ function deleteFolder(e, folder) {
 }
 function openFolderContextMenu(e) {
     if (e) e.preventDefault();
-    closeOpenFolderUpdationMenu();
-    closeOpenedMenu();
+   closeAllMenus()
     const layout = document.createElement("div");
     layout.innerHTML = folderOptions();
     layout.classList.add("folderUpdationMenu");
@@ -192,15 +228,14 @@ function openFolderContextMenu(e) {
 
     let deleteFolderBtn = layout.querySelector("#deleteFolder");
     deleteFolderBtn.addEventListener("click", (e) => deleteFolder(e, folder));
-    
+
     let openFolder = layout.querySelector("#openFolder");
-    openFolder.addEventListener("click",() => folderOpen(folder))
+    openFolder.addEventListener("click", () => folderOpen(folder))
 }
 function recursivelyCreateFolders(event, folderId) {
     if (folderId == '') {
         createFolderCode();
     }
-
 }
 const createAtfnc = () => {
     const d = new Date(Date.now());
@@ -243,14 +278,14 @@ function displayFolders() {
     windowDiv.innerHTML = ""
     let existingFolders = JSON.parse(localStorage.getItem("Folders")) || [];
     existingFolders.forEach((e) => {
-        createFolderCode(e?.folderName, e?.folderId,e?.children, e?.left || null,
+        createFolderCode(e?.folderName, e?.folderId, e?.children, e?.left || null,
             e?.top || null);
     })
 }
 //utility functions
 const id = () => `Fid-${Math.random(Date.now() * 1030240300)}`;
 document.body.addEventListener("contextmenu", createContextMenu);
-document.body.addEventListener("click", closeOpenedMenu)
+document.body.addEventListener("click", closeAllMenus)
 let isDragging = false;
 let currentFolder = null;
 let offsetX = 0;
@@ -282,20 +317,20 @@ function foldersDragAndDrop() {
         currentFolder.style.top = (e.clientY - offsetY) + "px";
     });
 
-  document.body.addEventListener("dragend", () => {
-    if (!currentFolder) return;
+    document.body.addEventListener("dragend", () => {
+        if (!currentFolder) return;
 
-    currentFolder.style.opacity = "1";
+        currentFolder.style.opacity = "1";
 
-    const foldername = currentFolder.querySelector(".folder-name").innerText;
+        const foldername = currentFolder.querySelector(".folder-name").innerText;
 
-    const left = parseInt(currentFolder.style.left) || 0;
-    const top = parseInt(currentFolder.style.top) || 0;
+        const left = parseInt(currentFolder.style.left) || 0;
+        const top = parseInt(currentFolder.style.top) || 0;
 
-    saveFolders(currentFolder.id, foldername, left, top);
+        saveFolders(currentFolder.id, foldername, left, top);
 
-    currentFolder = null;
-});
+        currentFolder = null;
+    });
 
 }
 function dragAndDrop(element) {
@@ -314,19 +349,32 @@ function dragAndDrop(element) {
 
         element.style.opacity = "0.5";
 
-        
+
         e.dataTransfer.setData("text/plain", "");
         e.dataTransfer.effectAllowed = "move";
     });
 
     document.body.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        if (!currentElement) return;
+    e.preventDefault();
+    if (!currentElement) return;
 
-        currentElement.style.position = "absolute";
-        currentElement.style.left = (e.clientX - offsetX) + "px";
-        currentElement.style.top = (e.clientY - offsetY) + "px";
-    });
+    const elementWidth = currentElement.offsetWidth;
+    const elementHeight = currentElement.offsetHeight;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let newLeft = e.clientX - offsetX;
+    let newTop = e.clientY - offsetY;
+    newLeft = Math.max(0, Math.min(newLeft, viewportWidth - elementWidth));
+
+    newTop = Math.max(0, Math.min(newTop, viewportHeight - elementHeight));
+
+    currentElement.style.position = "absolute";
+    currentElement.style.left = newLeft + "px";
+    currentElement.style.top = newTop + "px";
+});
+
 
     element.addEventListener("dragend", () => {
         if (!currentElement) return;
@@ -334,20 +382,71 @@ function dragAndDrop(element) {
         currentElement.style.opacity = "1";
         currentElement = null;
     });
+
+}
+function closeFolder(div){
+   div.remove()
     
 }
-
-function folderOpen(folder){
+function maximizeFolder(div){
+    div.classList.add("maximize");
+    div.style.top = "";
+    div.style.left = "";
+}
+function minimizeFolder(div){
+    div.classList.remove("maximize")
+}
+let isClicked = true;
+function folderOpen(folder) {
     console.log(folder)
-    closeOpenFolderUpdationMenu()
-    const folderName=  folder.querySelector(".folder-name");
+    closeAllMenus()
+    const folderName = folder.querySelector(".folder-name");
     console.log(folderName);
-    
+    const existingFolders = JSON.parse(localStorage.getItem("Folders"));
+    const filterFolders = existingFolders.filter(f=> f.folderId == folder.id);
     const div = document.createElement("div");
     div.classList.add("folder-window");
-    div.innerHTML = folderOpenUi(folderName.innerText);
+    div.id = folder.id;
+    console.log(filterFolders);
+    
+    div.innerHTML = folderOpenUi(folderName.innerText,filterFolders[0]?.createdAt);
     document.body.append(div);
     dragAndDrop(div)
+    const deleteFolderBtn = div.querySelector("#closeFolderBtn");
+    deleteFolderBtn.addEventListener("click",()=>closeFolder(div))
+    const maximizeBtn = document.querySelector("#maximizeBtn");
+
+    maximizeBtn.addEventListener("click",() => {
+        if(isClicked){
+            maximizeFolder(div)
+            isClicked = false;
+        }else{
+            minimizeFolder(div);
+            isClicked = true;
+        }
+    })
+    div.addEventListener("contextmenu",openMenu)
+}
+function closeAllMenus() {
+    document.querySelectorAll(
+        ".contextMenu, .folderUpdationMenu, .rec-menu"
+    ).forEach(menu => menu.remove());
+}
+
+function openMenu(e){
+ 
+        e.preventDefault();
+         e.stopPropagation();
+         closeAllMenus()
+        let exisingFolder = document.querySelector(".rec-menu");
+        if(exisingFolder) exisingFolder.remove();
+        let div = document.createElement("div");
+        div.classList.add("rec-menu");
+        div.innerHTML = recursiveFolderOptions();
+        document.body.appendChild(div);
+        div.style.left = e.clientX + "px";
+        div.style.top = e.clientY + "px";
+
 }
 
 foldersDragAndDrop();
