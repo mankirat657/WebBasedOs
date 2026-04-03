@@ -298,6 +298,45 @@ function foldersDragAndDrop() {
 });
 
 }
+function dragAndDrop(element) {
+    let offsetX = 0;
+    let offsetY = 0;
+    let currentElement = null;
+
+    element.setAttribute("draggable", "true");
+
+    element.addEventListener("dragstart", (e) => {
+        currentElement = element;
+
+        const rect = element.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        element.style.opacity = "0.5";
+
+        
+        e.dataTransfer.setData("text/plain", "");
+        e.dataTransfer.effectAllowed = "move";
+    });
+
+    document.body.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        if (!currentElement) return;
+
+        currentElement.style.position = "absolute";
+        currentElement.style.left = (e.clientX - offsetX) + "px";
+        currentElement.style.top = (e.clientY - offsetY) + "px";
+    });
+
+    element.addEventListener("dragend", () => {
+        if (!currentElement) return;
+
+        currentElement.style.opacity = "1";
+        currentElement = null;
+    });
+    
+}
+
 function folderOpen(folder){
     console.log(folder)
     closeOpenFolderUpdationMenu()
@@ -308,7 +347,9 @@ function folderOpen(folder){
     div.classList.add("folder-window");
     div.innerHTML = folderOpenUi(folderName.innerText);
     document.body.append(div);
+    dragAndDrop(div)
 }
+
 foldersDragAndDrop();
 
 window.addEventListener("DOMContentLoaded", () => {
